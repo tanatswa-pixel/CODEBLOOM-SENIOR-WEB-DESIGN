@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EcoQuest - Learn & Play</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      height: 100vh;
+      min-height: 100vh;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      background: #185534;
+    }
+    #homeVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100vw;
+      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+      background: #185534;
+      display: block;
+      transition: opacity 0.4s;
+    }
+    #homeVideo.hide {
+      display: none !important;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .home-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(120deg,rgba(20,60,32,0.80) 0%,rgba(34,100,56,0.90) 100%);
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 30px;
+      transition: opacity 0.4s;
+    }
+    nav {
+      background: linear-gradient(90deg,#267a2e,#44a049 80%);
+      color: white;
+      padding: 13px 0;
+      text-align: center;
+      width: 100vw;
+      border-bottom: 2px solid #b2ff59;
+      box-shadow: 0 2px 16px 0 #114d2850;
+      z-index: 2;
+      position: relative;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 12px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 8px;
+      padding: 7px 16px;
+      background: linear-gradient(90deg,#388e3c 70%,#66bb6a 100%);
+      transition: background 0.2s, color 0.2s;
+      font-size: 1.1em;
+    }
+    nav a:hover {
+      background: linear-gradient(90deg,#66bb6a 60%,#b2ff59 100%);
+      color: #1a330f;
+    }
+    .floating-emoji {
+      position: absolute;
+      animation: floatEmoji 6s infinite ease-in-out;
+      z-index: 3;
+      font-size: 2.3em;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 6px #333);
+    }
+    @keyframes floatEmoji {
+      0% { transform: translateY(0px); opacity: 0.8; }
+      50% { transform: translateY(-28px); opacity: 1; }
+      100% { transform: translateY(0px); opacity: 0.8; }
+    }
+    .floating-emoji:nth-child(1) { top: 11vh; left: 8vw; animation-delay: 0s; }
+    .floating-emoji:nth-child(2) { top: 17vh; left: 75vw; animation-delay: 1s; }
+    .floating-emoji:nth-child(3) { top: 33vh; left: 32vw; animation-delay: 2s; }
+    .floating-emoji:nth-child(4) { top: 57vh; left: 82vw; animation-delay: 3s; }
+    .floating-emoji:nth-child(5) { top: 79vh; left: 48vw; animation-delay: 4s; }
+    .logo {
+      text-align: center;
+      font-size: 2.3em;
+      color: #e6ffb3;
+      text-shadow: 2px 2px 8px #21441e;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+    }
+    .hero {
+      background: linear-gradient(90deg,rgba(49,150,73,0.88) 0%,rgba(76,175,80,0.84) 100%);
+      text-align: center;
+      padding: 38px 22px 30px 22px;
+      color: #fafff3;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #1b5e2030;
+      margin: 0 0 24px 0;
+      width: 95vw;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 0;
+    }
+    .hero h1 {
+      font-size: 2.7em;
+      color: #dbff7c;
+      text-shadow: 2px 2px 5px #154c29;
+      margin-bottom: 0.45em;
+    }
+    .cta-button {
+      background: linear-gradient(45deg,#388e3c 60%,#b2ff59 100%);
+      color: #185534;
+      padding: 14px 38px;
+      border: none;
+      border-radius: 13px;
+      cursor: pointer;
+      margin-top: 17px;
+      margin-bottom: 0px;
+      font-size: 1.1em;
+      font-weight: bold;
+      box-shadow: 0 2px 14px #114d2833;
+      transition: transform 0.19s, box-shadow 0.2s;
+    }
+    .cta-button:hover {
+      transform: scale(1.07);
+      box-shadow: 0 6px 24px #62ff8740;
+      background: linear-gradient(45deg,#b2ff59 60%,#388e3c 100%);
+      color: #1a330f;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 18px 14px 0 14px;
+      margin-bottom: 32px;
+    }
+    /* --- Flip Cards --- */
+    .flip-card-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      margin-bottom: 32px;
+      width: 100%;
+    }
+    .flip-card {
+      background: transparent;
+      width: 98vw;
+      max-width: 400px;
+      height: 200px;
+      perspective: 900px;
+      margin-bottom: 0;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 13px;
+      box-shadow: 0 0 16px #b2ff591a;
+      backface-visibility: hidden;
+      background: linear-gradient(93deg,rgba(60,90,60,0.95) 60%,rgba(100,200,120,0.80) 100%);
+      color: #fff;
+      padding: 28px 20px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.13em;
+      text-align: center;
+      border: 2px solid #aee571;
+      text-shadow: 0 1px 2px #1a330f55;
+    }
+    .flip-card-front h3 {
+      color: #b2ff59;
+      margin-top: 0;
+      margin-bottom: 9px;
+    }
+    .flip-card-back {
+      background: linear-gradient(120deg,#1c3a23ee 70%,#b2ff59cc 100%);
+      color: #fff;
+      transform: rotateY(180deg);
+      font-size: 1.08em;
+      font-weight: 500;
+    }
+    @media (max-width: 900px) {
+      .flip-card-container { flex-direction: column; align-items: center; }
+      .flip-card { width: 98vw; max-width: 99vw; }
+    }
+    @media (max-width: 480px) {
+      .flip-card { height: 220px; }
+      .flip-card-front, .flip-card-back { font-size: 1em; padding: 18px 8px 12px 8px;}
+    }
+    /* --- End Flip Cards --- */
+    .form-container {
+      background: linear-gradient(120deg,#1c3a23ee 70%,#6edb89ee 100%);
+      padding: 32px 18px 24px 18px;
+      border-radius: 15px;
+      width: 320px;
+      box-shadow: 0 0 24px #4caf5050;
+      color: #fff;
+      margin: 0 auto 40px auto;
+      margin-top: 32px;
+      z-index: 3;
+      position: relative;
+      border:2px solid #b2ff59;
+    }
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #b2ff59;
+    }
+    .form-container input[type="text"],
+    .form-container input[type="email"],
+    .form-container input[type="password"] {
+      width: 100%;
+      padding: 10px 11px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      background: #e4ffec;
+      color: #13532b;
+      font-size: 1.06em;
+    }
+    .form-container input[type="text"]:focus,
+    .form-container input[type="email"]:focus,
+    .form-container input[type="password"]:focus {
+      outline: 2px solid #b2ff59;
+      background: #f7ffe5;
+    }
+    .form-container button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(45deg,#388e3c 70%,#b2ff59 100%);
+      color: #1b5e20;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.08em;
+      margin-top: 6px;
+    }
+    .form-container button:hover {
+      background: linear-gradient(45deg,#b2ff59 60%,#66bb6a 100%);
+      color: #003300;
+    }
+    .link {
+      text-align: center;
+      margin-top: 13px;
+      font-size: .98em;
+    }
+    .link a {
+      color: #b2ff59;
+      text-decoration: underline;
+      transition: color 0.18s;
+    }
+    .link a:hover {
+      color: #388e3c;
+    }
+    .footer-links a {
+      color: #b2ff59;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    footer {
+      background: linear-gradient(90deg,#267a2e,#44a049 80%);
+      padding: 17px 0;
+      text-align: center;
+      color: #ececec;
+      margin-top: 34px;
+      width: 100vw;
+      border-top: 2px solid #b2ff59;
+      font-size: 1.02em;
+      box-shadow: 0 -1px 16px 0 #114d2830;
+      z-index: 2;
+      position: relative;
+    }
+    #userWelcome {
+      color: #f6ffb3;
+      margin-left: 22px;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    #logoutBtn {
+      display:none;
+      margin-left:14px;
+      background: linear-gradient(90deg,#b2ff59 60%,#388e3c 100%);
+      color: #14491a;
+      border-radius: 7px;
+      border: none;
+      padding: 7px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    #logoutBtn:hover { background: linear-gradient(90deg,#388e3c 60%,#b2ff59 100%); color: #fff;}
+    /* --- GAMES: Additions --- */
+    .games-nav-bar {
+      text-align: center;
+      margin-bottom: 22px;
+      margin-top: 10px;
+    }
+    .games-nav-bar button {
+      background: linear-gradient(90deg,#b2ff59 50%,#388e3c 100%);
+      color: #185534;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      margin: 0 8px;
+      font-weight: bold;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .games-nav-bar button.active {
+      background: #388e3c;
+      color: #fff;
+    }
+    .level-indicator {
+      font-size: 1.04em;
+      color: #dbff7c;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .score-display {
+      text-align: center;
+      margin: 18px 0 20px 0;
+      font-size: 1.15em;
+      color: #4caf50;
+      font-weight: bold;
+    }
+    .leaderboard {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 18px 20px 22px 20px;
+      border-radius: 14px;
+      max-width: 420px;
+      margin: 40px auto 0 auto;
+      box-shadow: 0 2px 16px #267a2e40;
+    }
+    .leaderboard h4 {
+      text-align: center;
+      color: #ffeb3b;
+      margin-bottom: 10px;
+    }
+    /* --- Updated Leaderboard Styles --- */
+    .leaderboard ol {
+      /* list-style removed, padding adjusted for custom list items */
+      color: #fff;
+      margin-top: 0;
+      padding-left: 0;
+    }
+    .leaderboard li {
+      background: rgba(255, 255, 255, 0.1);
+      margin: 8px 0;
+      padding: 12px 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px; /* Add some space between elements if they wrap */
+    }
+    .leaderboard-player-info {
+      flex-grow: 1;
+      font-weight: bold;
+    }
+    .leaderboard-stats {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .leaderboard-stat-item {
+      background: rgba(178, 255, 89, 0.2);
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+    /* --- End Updated Leaderboard Styles --- */
+    .quiz-result-correct {
+      color: #66bb6a;
+    }
+    .quiz-result-wrong {
+      color: #ef5350;
+    }
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(60px,1fr));
+      gap: 12px;
+      justify-items: center;
+      margin: 0 auto 20px auto;
+      max-width: 360px;
+    }
+    .memory-card {
+      background: #fff;
+      color: #185534;
+      font-size: 2em;
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px #388e3c20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s, color 0.2s, transform 0.18s;
+    }
+    .memory-card.flipped, .memory-card.matched {
+      background: #b2ff59;
+      color: #388e3c;
+      transform: scale(1.05);
+      cursor: default;
+    }
+    .draggable-item {
+      background: #fff;
+      color: #185534;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      margin: 8px;
+      display: inline-block;
+      cursor: grab;
+      font-weight: bold;
+      box-shadow: 0 2px 10px #388e3c30;
+    }
+    .bins-container {
+      display: flex;
+      justify-content: center;
+      gap: 22px;
+      margin: 16px 0 22px 0;
+      flex-wrap: wrap;
+    }
+    .bin {
+      background: #e6ffb3;
+      border: 2px solid #b2ff59;
+      color: #388e3c;
+      border-radius: 10px;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 1px 8px #388e3c20;
+    }
+    .bin-label {
+      font-size: 0.8em; /* Smaller font size for category labels */
+      color:#185534;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 2px;
+    }
+    @media (max-width: 650px) {
+      .hero, .container, .form-container { max-width: 95vw;}
+      .hero h1 { font-size: 2em;}
+      .logo { font-size: 1.5em; }
+      .info-card { font-size:1em;}
+      .form-container { width: 98vw; }
+      .memory-card { width:42px;height:42px;font-size:1.2em;}
+      .bin { width:44px; height:44px; font-size:1.2em;}
+      .bin-label { font-size: 0.72em; }
+    }
+    .quiz-option {
+      background: #f7ffe5;
+      color: #185534;
+      border: 2px solid #b2ff59;
+      border-radius: 8px;
+      margin: 7px 12px 7px 0;
+      padding: 8px 18px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+    }
+    .quiz-option:disabled {
+      opacity: 0.7;
+      cursor: default;
+    }
+    .quiz-explanation {
+      margin-top: 14px;
+      font-size: 1.08em;
+      font-weight: bold;
+    }
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #333;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 999;
+    }
+    .notification.show {
+      opacity: 1;
+    }
+    /* --- Game Action Buttons --- */
+    .game-action-btn {
+      background: linear-gradient(90deg,#b2ff59 60%,#388e3c 100%);
+      color: #185534;
+      border: none;
+      border-radius: 13px;
+      padding: 14px 38px;
+      font-size: 1.15em;
+      font-weight: bold;
+      margin: 15px 8px 0 0;
+      box-shadow: 0 2px 14px #114d2830;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.21s, background 0.19s;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+      letter-spacing: 0.02em;
+    }
+    .game-action-btn:hover, .game-action-btn:focus {
+      background: linear-gradient(90deg,#388e3c 70%,#b2ff59 100%);
+      color: #1a330f;
+      transform: scale(1.06);
+      box-shadow: 0 6px 24px #62ff8740;
+    }
+    .game-action-btn .btn-icon {
+      font-size: 1.15em;
+      margin-right: 3px;
+      vertical-align: middle;
+    }
+    /* --- Eco Action Match Specific Styles --- */
+    .eco-action-dropzone {
+      background: #e6ffb3;
+      color: #185534;
+      margin: 10px 0;
+      padding: 12px 10px;
+      border-radius: 9px;
+      min-height: 38px;
+      font-weight: bold;
+      border: 2px solid #b2ff59;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .eco-action-dropzone.correct {
+      background: #66bb6a;
+      color: #fff;
+    }
+    .eco-items-list, .eco-actions-list {
+      min-width: 180px;
+    }
+    /* --- Impact Metrics Page Styles --- */
+    .metric-card {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      color: #fff;
+      text-align: left; /* Default to left align for content */
+    }
+    .metric-card h3 {
+      margin-top: 0;
+      color: #e6ffb3; /* Consistent header color */
+      border-bottom: 1px solid #aee571;
+      padding-bottom: 8px;
+      text-align: center; /* Center the card titles */
+    }
+    #user-rating-stars span {
+      color: gold;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    #user-rating-stars span.rated {
+       color: gold; /* Keep rated stars gold */
+    }
+    #user-rating-stars span:hover,
+    #user-rating-stars span:hover ~ span {
+       color: #ccc; /* Hover effect */
+    }
+    #submit-rating-btn {
+       background: linear-gradient(90deg, #ffc107, #ff9800);
+       color: #3e2723;
+    }
+    #submit-rating-btn:hover {
+       background: linear-gradient(90deg, #ff9800, #ffc107);
+       color: #fff;
+    }
+    #submit-rating-btn:disabled {
+        background: linear-gradient(90deg, #66bb6a, #388e3c);
+        color: #fff;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+    /* --- End Impact Metrics Styles --- */
+  </style>
+</head>
+<body>
+  <!-- Video Background for Home Page (show only when home is visible) -->
+  <video class="video-bg" id="homeVideo" autoplay loop muted playsinline>
+    <source src="https://media.istockphoto.com/id/1430945266/video/nature-sunrise-mountain-trees-and-aerial-view-of-the-forrest-and-beautiful-scenic-in-the.mp4?s=mp4-640x640-is&k=20&c=gosr3IBQvn0OV-RLrkaWEzLBeCulQ4QZILC4M5B9DcY=" type="video/mp4">
+  </video>
+  <div class="home-overlay" id="homeOverlay">
+    <nav>
+      <a href="#home" id="homeNav">Home</a>
+      <a href="#games" id="gamesNav">Games</a>
+      <a href="#leaderboard" id="leaderboardNav">Leaderboard</a>
+      <a href="#login" id="loginNav">Login</a>
+      <a href="#signup" id="signupNav">Sign Up</a>
+      <span id="userWelcome"></span>
+      <button id="logoutBtn" onclick="logout()">Logout</button>
+    </nav>
+    <!-- Floating Emojis -->
+    <div class="floating-emoji">📚</div>
+    <div class="floating-emoji">🌿</div>
+    <div class="floating-emoji">✨</div>
+    <div class="floating-emoji">🌱</div>
+    <div class="floating-emoji">📘</div>
+    <!-- Login/Signup always visible on home -->
+    <div class="form-container" id="loginForm">
+      <h2>Login</h2>
+      <input id="loginUser" type="text" placeholder="Username" autocomplete="username" required />
+      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password" required />
+      <button onclick="handleLogin()">Login</button>
+      <div class="link"><a href="#" onclick="showSignup();return false;">Don't have an account? Sign up</a></div>
+    </div>
+    <div class="form-container" id="signupForm" style="display:none;">
+      <h2>Sign Up</h2>
+      <input id="signupUser" type="text" placeholder="Username" autocomplete="username" required />
+      <input id="signupEmail" type="email" placeholder="Email" autocomplete="email" required />
+      <input id="signupPass" type="password" placeholder="Password" autocomplete="new-password" required />
+      <input id="signupConfirm" type="password" placeholder="Confirm Password" autocomplete="new-password" required />
+      <button onclick="handleSignup()">Sign Up</button>
+      <div class="link"><a href="#" onclick="showLogin();return false;">Already have an account? Login</a></div>
+    </div>
+    <div class="logo">📜 EcoQuest Library</div>
+    <section class="hero">
+      <h1>Welcome, Explorer!</h1>
+      <p>Unlock the ancient knowledge of sustainability and protect our world through puzzles, quizzes, and challenges.</p>
+      <button class="cta-button" onclick="gotoGames()">Enter the Library 📖</button>
+    </section>
+    <section class="container">
+      <h2 style="text-align:center; margin-bottom:20px;">🔍 What You’ll Learn</h2>
+      <div class="flip-card-container">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>🌍 Climate Change</h3>
+              <p>Learn how rising temperatures affect ecosystems and discover ways to reduce your carbon footprint.</p>
+            </div>
+            <div class="flip-card-back">
+              People lack awareness of their daily carbon footprint and how individual actions contribute to climate change, resulting in missed opportunities for meaningful environmental impact reduction.
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>♻️ Recycling</h3>
+              <p>Master the art of sorting waste and understand why every bottle saved counts.</p>
+            </div>
+            <div class="flip-card-back">
+              Individuals demonstrate inadequate recycling habits due to limited knowledge and engagement, leading to increased waste in landfills and missed opportunities for resource conservation.
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>💧 Water Conservation</h3>
+              <p>Explore techniques to preserve one of Earth’s most precious resources—freshwater.</p>
+            </div>
+            <div class="flip-card-back">
+              People engage in water-wasting behaviors without understanding the scarcity issues and environmental impact, contributing to unnecessary water consumption and strain on local resources.
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <h3>⚡ Renewable Energy</h3>
+              <p>Uncover the secrets of solar, wind, and hydro energy and their role in a greener future.</p>
+            </div>
+            <div class="flip-card-back">
+              Individuals have limited understanding of renewable energy concepts and their importance, resulting in reduced advocacy for and adoption of sustainable energy solutions in their communities.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <p>&copy; 2025 EcoQuest Library | Protecting the Planet Since Ancient Times</p>
+      <p class="footer-links">
+        <a href="#" onclick="showLogin();return false;">Login</a> |
+        <a href="#" onclick="showSignup();return false;">Sign Up</a>
+      </p>
+    </footer>
+  </div>
+  <!-- GAMES PAGE (hidden by default) -->
+  <section id="games" style="display:none;max-width:820px;margin:0 auto;">
+    <div class="games-nav-bar">
+      <button id="ecoActionMatchBtn" type="button">🌱 Eco Action Match</button>
+      <button id="dragDropGameBtn" type="button">♻️ Sorter</button>
+      <button id="quizGameBtn" type="button">❓ Quiz</button>
+      <button id="leaderboardGameBtn" type="button">🏆 Leaderboard</button>
+      <!-- Add Metrics Button -->
+      <button id="metricsBtn" type="button">📊 Metrics</button>
+    </div>
+    <!-- Eco Action Match Game Page -->
+    <section id="eco-action-match" class="page" style="display:none;">
+      <h2>🌱 Eco Action Match</h2>
+      <div class="level-indicator">Level: <span id="eco-level">1</span></div>
+      <div class="score-display">Score: <span id="eco-score">0</span></div>
+      <div class="eco-action-match-container" style="display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;">
+        <div>
+          <h4 style="text-align:center">Items</h4>
+          <div id="ecoItems" class="eco-items-list" style="min-width:180px;"></div>
+        </div>
+        <div>
+          <h4 style="text-align:center">Eco Actions</h4>
+          <div id="ecoActions" class="eco-actions-list" style="min-width:220px;"></div>
+        </div>
+      </div>
+      <button onclick="nextEcoLevel()" type="button" class="game-action-btn"><span class="btn-icon">➡️</span> Next Level</button>
+    </section>
+    <!-- Drag & Drop Game Page -->
+    <section id="drag-drop-game" class="page" style="display:none;">
+      <h2>♻️ Recycling Sorter</h2>
+      <div class="level-indicator">Level: <span id="drag-level">1</span></div>
+      <div class="score-display">Correct: <span id="drag-correct">0</span> / Total: <span id="drag-total">0</span></div>
+      <div class="items-container" id="itemContainer"></div>
+      <div class="bins-container" id="binContainer"></div>
+      <button onclick="nextDragLevel()" type="button" class="game-action-btn"><span class="btn-icon">➡️</span> Next Level</button>
+    </section>
+    <!-- Quiz Game Page -->
+    <section id="quiz-game" class="page" style="display:none;">
+      <h2>❓ Eco Knowledge Quiz</h2>
+      <div class="level-indicator">Question: <span id="quiz-question-number">1</span> of <span id="quiz-total">5</span></div>
+      <div class="score-display">Correct: <span id="quiz-correct">0</span></div>
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-explanation" id="quizExplanation"></div>
+      <button onclick="nextQuizQuestion()" type="button" class="game-action-btn"><span class="btn-icon">➡️</span> Next Question</button>
+      <button onclick="endQuiz()" type="button" class="game-action-btn" style="background:linear-gradient(90deg,#e53935 60%,#ffeb3b 100%);color:#185534;"><span class="btn-icon">🏁</span> End Quiz</button>
+    </section>
+    <!-- Leaderboard Page -->
+    <section id="leaderboard" class="page" style="display:none;">
+      <h2>🏆 Global Leaderboard</h2>
+      <div class="leaderboard">
+        <h4>Top Players</h4>
+        <ol id="lb-list"></ol>
+      </div>
+    </section>
+    <!-- Impact Metrics Page -->
+    <section id="impact-metrics" class="page" style="display:none;">
+      <h2>📊 EcoQuest Impact Metrics</h2>
+      <p style="text-align:center; margin-bottom: 25px;">Understanding our journey towards a greener future.</p>
+
+      <!-- Overall Rating Display -->
+      <div class="metric-card" style="background: linear-gradient(120deg, #1a4d2d, #4caf50);">
+        <h3>🌍 Overall User Experience Rating</h3>
+        <div style="font-size: 3em; font-weight: bold; text-align: center; margin: 15px 0;">
+          <span id="average-rating-display">--</span>/5
+          <div style="font-size: 0.5em; margin-top: 5px;">(Based on <span id="total-ratings-count">0</span> ratings)</div>
+        </div>
+        <!-- User Rating Submission -->
+        <div style="text-align: center; margin-top: 20px;">
+          <p>How would you rate your experience with EcoQuest?</p>
+          <div id="user-rating-stars" style="font-size: 2em;">
+            <span data-rating="1">☆</span>
+            <span data-rating="2">☆</span>
+            <span data-rating="3">☆</span>
+            <span data-rating="4">☆</span>
+            <span data-rating="5">☆</span>
+          </div>
+          <button id="submit-rating-btn" class="game-action-btn" style="margin-top: 15px; padding: 8px 20px; font-size: 1em;"><span class="btn-icon">⭐</span> Submit Rating</button>
+          <div id="rating-submission-message" style="margin-top: 10px; min-height: 1.5em;"></div>
+        </div>
+      </div>
+
+      <!-- Sign-ups & Streaks -->
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px;">
+        <div class="metric-card" style="background: linear-gradient(120deg, #5c2a4d, #ab47bc); flex: 1; min-width: 200px;">
+          <h3>👥 Total Eco-Warriors</h3>
+          <div style="font-size: 2.5em; font-weight: bold; text-align: center; margin: 15px 0;">
+            <span id="total-signups-display">--</span>
+          </div>
+          <p style="text-align: center; font-size: 0.9em;">Adventurers joined since launch</p>
+        </div>
+
+        <div class="metric-card" style="background: linear-gradient(120deg, #0d47a1, #2196f3); flex: 1; min-width: 200px;">
+          <h3>🔥 Streak Champions</h3>
+          <div style="font-size: 2.5em; font-weight: bold; text-align: center; margin: 15px 0;">
+            <span id="active-streaks-display">--</span>
+          </div>
+          <p style="text-align: center; font-size: 0.9em;">Users maintaining daily engagement</p>
+          <div style="text-align: center; margin-top: 10px;">
+            <strong>Longest Current Streak:</strong> <span id="longest-streak-display">--</span> days
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Rates Note -->
+      <div class="metric-card" style="background: linear-gradient(120deg, #3e2723, #795548); margin-top: 30px;">
+        <h3>⚠️ System Stability</h3>
+        <p style="text-align: center;">
+          <!-- Placeholder: In a real backend, you'd track server errors, failed logins, JS exceptions -->
+          Error rates are continuously monitored server-side using application performance monitoring tools.
+          <!-- Example of what could be shown if tracked: -->
+          <!-- Recent Login Failures: <span id="login-error-count">0</span> -->
+          <!-- Game Crashes Reported: <span id="crash-report-count">0</span> -->
+        </p>
+      </div>
+
+      <!-- Back Button -->
+      <div style="text-align: center; margin-top: 40px;">
+        <button onclick="gotoHome()" class="game-action-btn"><span class="btn-icon">🏠</span> Back to Library</button>
+      </div>
+    </section>
+    <div style="padding:32px;text-align:center;color:#185534;background:linear-gradient(90deg,#b2ff59 50%,#388e3c 100%);border-radius:12px;margin:60px auto 20px auto;max-width:600px;box-shadow:0 2px 22px #267a2e40;">
+      <button onclick="gotoHome()" style="background:#388e3c;color:#fff;margin-top:22px;padding:12px 32px;border-radius:9px;font-size:1.1em;border:none;" type="button">Back to Library</button>
+    </div>
+  </section>
+  <script>
+    // --- FLIP CARD INTERACTION ---
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.flip-card').forEach(card => {
+        card.addEventListener('click', function() {
+          card.classList.toggle('flipped');
+        });
+      });
+      // ... rest of your DOMContentLoaded logic ...
+      document.getElementById("gamesNav").onclick = function(e){e.preventDefault();gotoGames();};
+      document.getElementById("homeNav").onclick = function(e){e.preventDefault();gotoHome();};
+      document.getElementById("loginNav").onclick = function(e){e.preventDefault();showLogin();document.getElementById("homeOverlay").scrollTo(0,0);}
+      document.getElementById("signupNav").onclick = function(e){e.preventDefault();showSignup();document.getElementById("homeOverlay").scrollTo(0,0);}
+      document.getElementById("leaderboardNav").onclick = function(e){e.preventDefault();gotoGames();showGameSection('leaderboard');};
+      document.getElementById("dragDropGameBtn").onclick = function(){showGameSection('drag-drop-game');};
+      document.getElementById("quizGameBtn").onclick = function(){showGameSection('quiz-game');};
+      document.getElementById("leaderboardGameBtn").onclick = function(){showGameSection('leaderboard');};
+      // New Eco Action Match Button
+      document.getElementById("ecoActionMatchBtn").onclick = function(){showGameSection('eco-action-match');};
+      // New Metrics Button
+      document.getElementById("metricsBtn").onclick = function(){ showGameSection('impact-metrics'); updateImpactMetricsDisplay(); };
+      // Initial state
+      showLogin();
+      updateUserUI();
+      // Ensure the video is visible on home page at start
+      document.getElementById("homeVideo").classList.remove("hide");
+    });
+    // --- Login/Signup logic ---
+    let users = {};
+    let currentUser = null;
+    // --- IMPACT METRICS LOGIC ---
+    // --- IMPORTANT: The current code uses browser storage (localStorage, users object).
+    // --- For TRUE persistence and accurate metrics across all users/sessions,
+    // --- this logic MUST be moved to a real backend server (Node.js, Python, etc.)
+    // --- and data stored in a database (PostgreSQL, MongoDB, etc.).
+
+    // --- FOR DEMONSTRATION WITH CURRENT SETUP (Browser Storage) ---
+    // Placeholder for ratings (In reality, this would be stored server-side)
+    let ratings = JSON.parse(localStorage.getItem('ecoquest_ratings') || '[]');
+    let hasSubmittedRating = localStorage.getItem('has_submitted_rating_' + currentUser) === 'true';
+
+    // Function to update the displayed metrics (based on current browser storage state)
+    function updateImpactMetricsDisplay() {
+        if (!currentUser) return; // Only show if logged in
+
+        // 1. Average Rating & Total Ratings
+        const totalRatings = ratings.length;
+        const sumRatings = ratings.reduce((acc, r) => acc + (r.rating || 0), 0); // Handle potential missing rating
+        const averageRating = totalRatings > 0 ? (sumRatings / totalRatings).toFixed(1) : '--';
+        document.getElementById("average-rating-display").textContent = averageRating;
+        document.getElementById("total-ratings-count").textContent = totalRatings;
+
+        // Disable rating submission if already done for *this specific user*
+        // Note: localStorage key is user-specific
+        hasSubmittedRating = localStorage.getItem('has_submitted_rating_' + currentUser) === 'true';
+        const ratingStars = document.getElementById("user-rating-stars");
+        const submitBtn = document.getElementById("submit-rating-btn");
+        const messageDiv = document.getElementById("rating-submission-message");
+
+        // Reset stars display
+        resetStarDisplay();
+
+        if (hasSubmittedRating) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Rating Submitted";
+            // Optional: Show user's previous rating if stored
+            // const userRating = ratings.find(r => r.user === currentUser)?.rating;
+            // if (userRating) highlightUserRating(userRating);
+            messageDiv.textContent = "Thank you for your feedback!";
+            messageDiv.style.color = "#66bb6a";
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Rating";
+            messageDiv.textContent = "";
+        }
+
+        // 2. Total Sign-ups (based on users object keys)
+        const totalSignups = Object.keys(users).length;
+        document.getElementById("total-signups-display").textContent = totalSignups;
+
+        // 3. Streak Information
+        let activeStreaks = 0;
+        let longestStreak = 0;
+        Object.values(users).forEach(u => {
+            // Ensure streak exists
+            const streak = u.streak || 0;
+            if (streak > 0) activeStreaks++;
+            if (streak > longestStreak) longestStreak = streak;
+        });
+        document.getElementById("active-streaks-display").textContent = activeStreaks;
+        document.getElementById("longest-streak-display").textContent = longestStreak;
+
+        // 4. Error Rates - Note: Cannot be accurately tracked client-side.
+        // This is just a placeholder message as discussed.
+        // In a real backend, you'd have server logs and monitoring.
+    }
+
+    // Handle star rating selection
+    document.querySelectorAll("#user-rating-stars span").forEach(star => {
+        star.addEventListener("click", function() {
+            if (hasSubmittedRating) return; // Prevent changing after submission
+            const rating = parseInt(this.dataset.rating);
+            if (!isNaN(rating) && rating >= 1 && rating <= 5) {
+                highlightUserRating(rating);
+                // Store temporarily selected rating in a data attribute on the container
+                document.getElementById("user-rating-stars").dataset.selectedRating = rating;
+            }
+        });
+    });
+
+    function resetStarDisplay() {
+        document.querySelectorAll("#user-rating-stars span").forEach(star => {
+            star.textContent = "☆";
+            star.classList.remove("rated");
+        });
+    }
+
+    function highlightUserRating(rating) {
+        resetStarDisplay(); // Clear previous highlights
+        document.querySelectorAll("#user-rating-stars span").forEach((star, index) => {
+            if (index < rating) {
+                star.textContent = "★";
+                star.classList.add("rated");
+            }
+        });
+    }
+
+    // Handle rating submission
+    document.getElementById("submit-rating-btn").onclick = function() {
+        if (hasSubmittedRating) {
+             document.getElementById("rating-submission-message").textContent = "You have already submitted a rating.";
+             document.getElementById("rating-submission-message").style.color = "#ef5350";
+            return;
+        }
+        const selectedRating = parseInt(document.getElementById("user-rating-stars").dataset.selectedRating);
+        if (!selectedRating || selectedRating < 1 || selectedRating > 5) {
+            document.getElementById("rating-submission-message").textContent = "Please select a star rating.";
+            document.getElementById("rating-submission-message").style.color = "#ef5350";
+            return;
+        }
+
+        // --- SIMULATE BACKEND SAVING ---
+        // In reality, this would be an API call: fetch('/api/ratings', {method: 'POST', body: JSON.stringify(...), ...})
+        const newRatingEntry = { user: currentUser, rating: selectedRating, timestamp: new Date().toISOString() };
+        ratings.push(newRatingEntry);
+        localStorage.setItem('ecoquest_ratings', JSON.stringify(ratings));
+        localStorage.setItem('has_submitted_rating_' + currentUser, 'true');
+
+        document.getElementById("rating-submission-message").textContent = "Thank you for rating EcoQuest!";
+        document.getElementById("rating-submission-message").style.color = "#66bb6a";
+        updateImpactMetricsDisplay(); // Refresh display
+         // Disable button after submission
+        this.disabled = true;
+        this.textContent = "Rating Submitted";
+    };
+    // --- END IMPACT METRICS LOGIC ---
+
+    function showLogin() {
+      document.getElementById("loginForm").style.display = "";
+      document.getElementById("signupForm").style.display = "none";
+    }
+    function showSignup() {
+      document.getElementById("loginForm").style.display = "none";
+      document.getElementById("signupForm").style.display = "";
+    }
+    function gotoGames() {
+      if (!currentUser) {
+        alert("You must login or sign up to play!");
+        showLogin();
+        return;
+      }
+      document.getElementById("homeOverlay").style.display = "none";
+      document.getElementById("games").style.display = "";
+      document.getElementById("homeVideo").classList.add("hide");
+      showGameSection('eco-action-match'); // Default to the new game
+      window.scrollTo(0,0);
+    }
+    function gotoHome() {
+      document.getElementById("homeOverlay").style.display = "";
+      document.getElementById("games").style.display = "none";
+      document.getElementById("homeVideo").classList.remove("hide");
+      window.scrollTo(0,0);
+    }
+    function handleSignup() {
+      const user = document.getElementById("signupUser").value.trim();
+      const email = document.getElementById("signupEmail").value.trim();
+      const pass = document.getElementById("signupPass").value;
+      const conf = document.getElementById("signupConfirm").value;
+      if (!user || !email || !pass || !conf) return alert("Please fill all fields.");
+      if (pass !== conf) return alert("Passwords do not match.");
+      if (users[user]) return alert("Username already exists.");
+      users[user] = {email, pass, score:0, streak:0, badges:[], dragGame:{correct:0, total:0, level:1}, quizGame:{correct:0, total:5, current:0}, ecoActionGame:{score:0, level:1}};
+      alert("Sign up successful! Please login.");
+      showLogin();
+    }
+    function handleLogin() {
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value;
+      if (!users[user] || users[user].pass !== pass) return alert("Invalid credentials!");
+      currentUser = user;
+      updateUserUI();
+      alert("Welcome, " + currentUser + "!");
+      gotoGames();
+      loadUserStats();
+      // Initialize metrics display for the logged-in user
+      updateImpactMetricsDisplay();
+    }
+    function logout() {
+      currentUser = null;
+      updateUserUI();
+      gotoHome();
+    }
+    function updateUserUI() {
+      document.getElementById("userWelcome").textContent = currentUser ? "Welcome, " + currentUser : "";
+      document.getElementById("userWelcome").style.display = currentUser ? "inline" : "none";
+      document.getElementById("logoutBtn").style.display = currentUser ? "inline" : "none";
+      if (currentUser) {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("signupForm").style.display = "none";
+      } else {
+        showLogin();
+      }
+    }
+    // --- GAMES PAGE TAB SWITCHER ---
+    let user = { name: "Player", score: 0, badges: [], streak: 0 };
+    let dragGame = { correct: 0, total: 0, level: 1 };
+    let quizGame = { correct: 0, total: 5, current: 0 };
+    let ecoActionGame = { score: 0, level: 1 }; // New game state
+    function loadUserStats() {
+      let u = users[currentUser];
+      user = u || { name: currentUser, score: 0, badges: [], streak: 0 };
+      if (!user.dragGame) user.dragGame = {correct: 0, total: 0, level: 1};
+      if (!user.quizGame) user.quizGame = {correct: 0, total: 5, current: 0};
+      if (!user.ecoActionGame) user.ecoActionGame = {score: 0, level: 1}; // Initialize new game stats
+      dragGame = user.dragGame;
+      quizGame = user.quizGame;
+      ecoActionGame = user.ecoActionGame; // Load new game stats
+      user.name = currentUser;
+      user.score = user.score || 0;
+      user.streak = user.streak || 0;
+      user.badges = user.badges || [];
+      updateLeaderboard();
+      // createDraggableItems(); // Don't auto-start this game
+      // loadQuizQuestion(); // Don't auto-start this game
+      // startEcoActionMatch(); // Don't auto-start this game
+    }
+    function showGameSection(id) {
+      // Hide all
+      document.querySelectorAll('#games .page').forEach(p=>p.style.display='none');
+      document.querySelectorAll('.games-nav-bar button').forEach(b=>b.classList.remove('active'));
+      // Show one
+      document.getElementById(id).style.display = '';
+      let btnMap = {
+        'drag-drop-game': 'dragDropGameBtn',
+        'quiz-game': 'quizGameBtn',
+        'leaderboard': 'leaderboardGameBtn',
+        'eco-action-match': 'ecoActionMatchBtn', // Map new game button
+        'impact-metrics': 'metricsBtn' // Map metrics button
+      };
+      if (btnMap[id]) document.getElementById(btnMap[id]).classList.add('active');
+      // Start logic for that section
+      if (id==='drag-drop-game') createDraggableItems();
+      if (id==='quiz-game') loadQuizQuestion();
+      if (id==='leaderboard') updateLeaderboard();
+      if (id==='eco-action-match') startEcoActionMatch(); // Start new game logic
+      // Metrics page doesn't need specific start logic, just display update
+    }
+    // --- DRAG & DROP GAME ---
+    // UPDATED: More varied and clear objects
+    const items = [
+      { name: "Newspaper", bin: "paper" },
+      { name: "Magazine", bin: "paper" },
+      { name: "Cardboard Box", bin: "paper" },
+      { name: "Notebook", bin: "paper" },
+      { name: "Plastic Bottle", bin: "plastic" },
+      { name: "Plastic Bag", bin: "plastic" },
+      { name: "Milk Jug", bin: "plastic" },
+      { name: "Yogurt Cup", bin: "plastic" },
+      { name: "Wine Bottle", bin: "glass" },
+      { name: "Glass Jar", bin: "glass" },
+      { name: "Drinking Glass", bin: "glass" },
+      { name: "Broken Vase", bin: "glass" },
+      { name: "Aluminum Can", bin: "metal" },
+      { name: "Tin Can", bin: "metal" },
+      { name: "Soda Can", bin: "metal" },
+      { name: "Metal Spoon", bin: "metal" }
+    ];
+    function createDraggableItems() {
+      const container = document.getElementById("itemContainer");
+      container.innerHTML = "";
+      const bins = document.getElementById("binContainer");
+      bins.innerHTML = "";
+      const shuffledItems = shuffle(items);
+      const binNames = ["paper", "plastic", "glass", "metal"];
+      binNames.forEach(binName => {
+        const bin = document.createElement("div");
+        bin.className = "bin";
+        bin.dataset.bin = binName;
+        bin.setAttribute("ondragover", "allowDrop(event)");
+        bin.setAttribute("ondrop", "dropItem(event)");
+        bin.innerHTML = `<div class="bin-icon">${getBinIcon(binName)}</div><div class="bin-label">${capitalize(binName)}</div>`;
+        bins.appendChild(bin);
+      });
+      shuffledItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "draggable-item";
+        div.draggable = true;
+        div.textContent = item.name;
+        div.dataset.bin = item.bin;
+        div.addEventListener("dragstart", dragStart);
+        container.appendChild(div);
+      });
+      dragGame.total = items.length;
+      document.getElementById("drag-level").textContent = dragGame.level;
+      document.getElementById("drag-correct").textContent = dragGame.correct;
+      document.getElementById("drag-total").textContent = dragGame.total;
+      user.dragGame = dragGame;
+    }
+    function dropItem(e) {
+      e.preventDefault();
+      const expectedBin = e.currentTarget.dataset.bin;
+      const droppedBin = e.dataTransfer.getData("text/plain");
+      const draggedElement = Array.from(document.querySelectorAll(".draggable-item")).find(el=>el.dataset.bin===droppedBin);
+      if (expectedBin === droppedBin && draggedElement) {
+        showNotification("✅ Correct!");
+        dragGame.correct++;
+        user.score += 10;
+      } else {
+        showNotification("❌ Try again.");
+      }
+      if (draggedElement) {
+        draggedElement.remove();
+      }
+      document.getElementById("drag-correct").textContent = dragGame.correct;
+      if (document.querySelectorAll(".draggable-item").length === 0) {
+        alert(`${dragGame.correct}/${dragGame.total} correct!`);
+        if (dragGame.correct === dragGame.total && !user.badges.includes("Sorting Pro")) {
+          user.badges.push("Sorting Pro");
+          alert("Badge Earned: Sorting Pro!");
+        }
+        dragGame.correct = 0;
+        dragGame.level++;
+        user.dragGame = dragGame;
+        createDraggableItems();
+      }
+      updateLeaderboard();
+    }
+    function nextDragLevel() {
+      dragGame.level++;
+      user.dragGame = dragGame;
+      createDraggableItems();
+    }
+    // --- QUIZ GAME ---
+    const quizQuestions = [
+      { q: "What % of Earth's water is fresh?", o: ["1%", "2.5%", "10%", "25%"], a: "2.5%", f: "Only about 2.5% of Earth's water is fresh and suitable for drinking. To conserve, fix leaks promptly, take shorter showers, and use a broom instead of a hose to clean driveways." },
+      { q: "Which action helps reduce CO₂ emissions the most?", o: ["Eating less meat", "Carpooling", "Unplugging devices", "All of the above"], a: "All of the above", f: "All these actions help reduce your carbon footprint. Eating less meat reduces methane from livestock, carpooling cuts fuel use, and unplugging devices prevents 'phantom' energy drain." },
+      { q: "How many trees are saved by recycling 1 ton of paper?", o: ["5", "10", "17", "25"], a: "17", f: "Recycling just one ton of paper saves 17 trees! Reduce paper waste by going digital when possible, printing double-sided, and using recycled paper products." },
+      { q: "Most common plastic pollution?", o: ["Bottles", "Straws", "Bags", "Fishing Nets"], a: "Bottles", f: "Plastic bottles are a major source of pollution. Reduce your impact by using a reusable water bottle and choosing products with minimal plastic packaging." },
+      { q: "Which energy source is renewable?", o: ["Coal", "Natural Gas", "Solar", "Nuclear"], a: "Solar", f: "Solar energy is renewable and clean. You can reduce reliance on fossil fuels by supporting solar power initiatives or using solar-powered chargers for small devices." },
+      { q: "How long does it take for a plastic bag to decompose?", o: ["10 years", "100 years", "500 years", "1000+ years"], a: "1000+ years", f: "A single plastic bag can take over 1000 years to decompose. Switch to reusable cloth or canvas bags for shopping to drastically cut down on plastic waste." },
+      { q: "Which household activity uses the most water indoors?", o: ["Showering", "Toilet flushing", "Washing dishes", "Laundry"], a: "Toilet flushing", f: "Toilets use a significant amount of water per flush. Install a low-flow toilet or place a water-saving device (like a filled water bottle) in your tank to reduce water usage." },
+      { q: "What gas is released when organic waste decomposes in a landfill?", o: ["Oxygen", "Nitrogen", "Methane", "Carbon Dioxide"], a: "Methane", f: "Landfills are a major source of methane, a potent greenhouse gas. Composting your organic kitchen scraps at home can significantly reduce methane emissions and create nutrient-rich soil." },
+      { q: "Which food has the highest carbon footprint per kg?", o: ["Chicken", "Rice", "Beef", "Potatoes"], a: "Beef", f: "Beef production generates high levels of greenhouse gases. Reducing meat consumption, especially beef, even for a few meals a week, can significantly lower your personal carbon footprint." },
+      { q: "What is the primary component of natural gas?", o: ["Oxygen", "Hydrogen", "Carbon Dioxide", "Methane"], a: "Methane", f: "Natural gas is primarily methane. While it burns cleaner than coal, it still contributes to CO2 emissions. Improve home insulation and use energy-efficient appliances to reduce the need for heating fueled by natural gas." }
+    ];
+    function loadQuizQuestion() {
+      let q = quizQuestions[quizGame.current];
+      document.getElementById("quiz-question-number").textContent = quizGame.current + 1;
+      document.getElementById("quiz-total").textContent = quizGame.total;
+      document.getElementById("quiz-correct").textContent = quizGame.correct;
+      document.getElementById("quizQuestion").textContent = q.q;
+      const optionsDiv = document.getElementById("quizOptions");
+      optionsDiv.innerHTML = "";
+      q.o.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-option";
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(btn, q.a, q.f); // Pass the fun fact
+        optionsDiv.appendChild(btn);
+      });
+      document.getElementById("quizExplanation").textContent = "";
+      user.quizGame = quizGame;
+    }
+    function selectAnswer(button, correct, funFact) { // Accept funFact parameter
+      [...document.getElementsByClassName("quiz-option")].forEach(b => b.disabled = true);
+      let explanationText = "";
+      if (button.textContent === correct) {
+        quizGame.correct++;
+        button.classList.add("quiz-result-correct");
+        explanationText = `✔️ Correct! ${funFact}`; // Use fun fact for correct answers
+      } else {
+        button.classList.add("quiz-result-wrong");
+        const correctButton = [...document.getElementsByClassName("quiz-option")].find(b => b.textContent === correct);
+        if (correctButton) {
+         correctButton.classList.add("quiz-result-correct");
+        }
+        // Show correct answer and fun fact for wrong answers
+        explanationText = `❌ Incorrect. The correct answer is: ${correct}. ${funFact}`;
+      }
+      document.getElementById("quizExplanation").textContent = explanationText;
+      document.getElementById("quiz-correct").textContent = quizGame.correct;
+      user.quizGame = quizGame;
+      updateLeaderboard();
+    }
+    function nextQuizQuestion() {
+      quizGame.current++;
+      user.quizGame = quizGame;
+      if (quizGame.current < quizGame.total) {
+        loadQuizQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+    function endQuiz() {
+      alert(`Quiz complete! You got ${quizGame.correct}/${quizGame.total} right.`);
+      user.score += quizGame.correct * 10;
+      if (quizGame.correct === quizGame.total && !user.badges.includes("Perfect Score")) {
+        user.badges.push("Perfect Score");
+        alert("Badge Earned: Perfect Score!");
+      }
+      quizGame.current = 0; // restart index for next play
+      quizGame.correct = 0;
+      // Increase total questions for more levels
+      quizGame.total = Math.min(quizGame.total + 2, quizQuestions.length); // Add 2 questions per "level", up to the max
+      user.quizGame = quizGame;
+      updateLeaderboard();
+      showGameSection('leaderboard');
+    }
+    // --- LEADERBOARD ---
+    function updateLeaderboard() {
+      // Store stats for this user
+      if (currentUser) {
+        users[currentUser].score = user.score;
+        users[currentUser].streak = user.streak;
+        users[currentUser].badges = user.badges;
+        users[currentUser].dragGame = dragGame;
+        users[currentUser].quizGame = quizGame;
+        users[currentUser].ecoActionGame = ecoActionGame; // Save new game stats
+      }
+      // Build leaderboard array from all users
+      let leaderboardArr = Object.keys(users).map(u => {
+        const uData = users[u];
+        // Calculate total points across all games for this user
+        // Drag points: correct items * 10
+        // Quiz points: correct answers * 10
+        // Eco Action points: score from the game
+        const totalPoints = (uData.dragGame?.correct * 10 || 0) +
+                            (uData.quizGame?.correct * 10 || 0) +
+                            (uData.ecoActionGame?.score || 0);
+
+        // Get individual game levels
+        const dragLevel = uData.dragGame?.level || 1;
+        const quizLevel = uData.quizGame?.level || 1;
+        const ecoActionLevel = uData.ecoActionGame?.level || 1;
+
+        // Calculate overall level (using max level achieved in any game)
+        const overallLevel = Math.max(dragLevel, quizLevel, ecoActionLevel);
+
+        return {
+          name: u,
+          totalPoints: totalPoints,
+          streak: uData.streak || 0,
+          badges: uData.badges || [],
+          dragLevel: dragLevel,
+          quizLevel: quizLevel,
+          ecoActionLevel: ecoActionLevel,
+          overallLevel: overallLevel
+        };
+      });
+
+      // Sort by total points descending, then by overall level descending for tie-breaker
+      leaderboardArr.sort((a, b) => {
+        if (b.totalPoints !== a.totalPoints) {
+            return b.totalPoints - a.totalPoints; // Higher points first
+        }
+        return b.overallLevel - a.overallLevel; // If points equal, higher level first
+      });
+
+      const lbList = document.getElementById("lb-list");
+      lbList.innerHTML = ""; // Clear existing list
+      leaderboardArr.slice(0, 10).forEach((entry, idx) => {
+        const li = document.createElement("li");
+
+        // Player name and rank
+        const playerInfo = document.createElement("div");
+        playerInfo.className = "leaderboard-player-info";
+        playerInfo.textContent = `${idx + 1}. ${entry.name}`;
+
+        // Stats container for main stats (Total Points, Overall Level, Streak)
+        const statsContainer = document.createElement("div");
+        statsContainer.className = "leaderboard-stats";
+
+        // Total Points
+        const pointsSpan = document.createElement("span");
+        pointsSpan.className = "leaderboard-stat-item";
+        pointsSpan.textContent = `Pts: ${entry.totalPoints}`;
+        statsContainer.appendChild(pointsSpan);
+
+        // Overall Level
+        const levelSpan = document.createElement("span");
+        levelSpan.className = "leaderboard-stat-item";
+        levelSpan.textContent = `Lvl: ${entry.overallLevel}`;
+        statsContainer.appendChild(levelSpan);
+
+        // Streak
+        const streakSpan = document.createElement("span");
+        streakSpan.className = "leaderboard-stat-item";
+        streakSpan.textContent = `🔥 ${entry.streak}`;
+        statsContainer.appendChild(streakSpan);
+
+        // Individual Game Levels container (displayed on a new line below main stats)
+        const gameLevelsContainer = document.createElement("div");
+        gameLevelsContainer.className = "leaderboard-stats";
+        gameLevelsContainer.style.width = "100%"; // Take full width below main stats
+        gameLevelsContainer.style.justifyContent = "flex-end"; // Align right
+        gameLevelsContainer.style.fontSize = "0.85em"; // Slightly smaller font
+        gameLevelsContainer.style.gap = "8px"; // Smaller gap
+
+        const dragLevelSpan = document.createElement("span");
+        dragLevelSpan.className = "leaderboard-stat-item";
+        dragLevelSpan.textContent = `♻️Lvl:${entry.dragLevel}`;
+        gameLevelsContainer.appendChild(dragLevelSpan);
+
+        const quizLevelSpan = document.createElement("span");
+        quizLevelSpan.className = "leaderboard-stat-item";
+        quizLevelSpan.textContent = `❓Lvl:${entry.quizLevel}`;
+        gameLevelsContainer.appendChild(quizLevelSpan);
+
+        const ecoLevelSpan = document.createElement("span");
+        ecoLevelSpan.className = "leaderboard-stat-item";
+        ecoLevelSpan.textContent = `🌱Lvl:${entry.ecoActionLevel}`;
+        gameLevelsContainer.appendChild(ecoLevelSpan);
+
+        // Assemble the list item
+        li.appendChild(playerInfo);
+        li.appendChild(statsContainer);
+        li.appendChild(gameLevelsContainer); // Add the game levels line
+
+        lbList.appendChild(li);
+      });
+    }
+    // --- END LEADERBOARD ---
+    // --- UTILS ---
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+    function getBinIcon(name) {
+      switch (name) {
+        case "paper": return "📄";
+        case "plastic": return "🥤";
+        case "glass": return "🍷";
+        case "metal": return "🥫";
+      }
+    }
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase()+str.slice(1);
+    }
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.dataset.bin);
+      e.dataTransfer.effectAllowed = "move";
+    }
+    function allowDrop(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    }
+    function showNotification(message) {
+      let notif = document.getElementById("notification");
+      if (!notif) {
+        notif = document.createElement("div");
+        notif.id = "notification";
+        notif.className = "notification";
+        document.body.appendChild(notif);
+      }
+      notif.textContent = message;
+      notif.classList.add("show");
+      setTimeout(() => notif.classList.remove("show"), 2200);
+    }
+    // Allow drop globally for bins
+    window.allowDrop = allowDrop;
+    window.dropItem = dropItem;
+    window.dragStart = dragStart;
+    // --- ECO ACTION MATCH GAME ONLY (new/changed) ---
+    // let ecoActionGame = { score: 0, level: 1 }; // Moved to global scope
+    const ecoActionPairs = [
+      { item: "Plastic Bottle", action: "Recycle in plastic bin" },
+      { item: "Aluminum Can", action: "Recycle in metal bin" },
+      { item: "Glass Jar", action: "Recycle in glass bin" },
+      { item: "Old T-Shirt", action: "Donate or use as rag" },
+      { item: "Banana Peel", action: "Compost it" },
+      { item: "Newspaper", action: "Recycle in paper bin" },
+      { item: "Dead Battery", action: "Take to hazardous waste facility" },
+      { item: "Broken Phone", action: "E-waste recycling" },
+      { item: "Milk Carton", action: "Recycle in carton bin" },
+      { item: "Plastic Bag", action: "Return to store drop-off" }
+    ];
+    function startEcoActionMatch() {
+      const level = ecoActionGame.level;
+      let numPairs = Math.min(4 + level, ecoActionPairs.length);
+      let pairs = shuffle(ecoActionPairs).slice(0, numPairs);
+      let items = pairs.map(p=>p.item);
+      let actions = pairs.map(p=>p.action);
+      actions = shuffle(actions);
+      const itemsDiv = document.getElementById("ecoItems");
+      itemsDiv.innerHTML = "";
+      items.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "draggable-item";
+        div.draggable = true;
+        div.textContent = item;
+        div.dataset.item = item;
+        div.addEventListener("dragstart", function(e){
+          e.dataTransfer.setData("text/plain", item);
+        });
+        itemsDiv.appendChild(div);
+      });
+      const actionsDiv = document.getElementById("ecoActions");
+      actionsDiv.innerHTML = "";
+      actions.forEach(action => {
+        const div = document.createElement("div");
+        div.className = "eco-action-dropzone";
+        div.textContent = action;
+        div.dataset.action = action;
+        div.ondragover = function(e){e.preventDefault();};
+        div.ondrop = function(e){
+          e.preventDefault();
+          let draggedItem = e.dataTransfer.getData("text/plain");
+          let correctPair = pairs.find(p=>p.item===draggedItem && p.action===action);
+          let itemEl = Array.from(document.querySelectorAll(".draggable-item")).find(el=>el.dataset.item===draggedItem);
+          if (correctPair && itemEl) {
+            showNotification("✅ Correct!");
+            ecoActionGame.score += 10;
+            user.score += 10;
+            itemEl.remove();
+            div.classList.add("correct");
+            div.textContent = `✅ ${action}`;
+            div.ondrop = null;
+            div.ondragover = null;
+          } else {
+            showNotification("❌ Try again.");
+          }
+          document.getElementById("eco-score").textContent = ecoActionGame.score;
+          user.ecoActionGame = ecoActionGame;
+          if (document.querySelectorAll(".draggable-item").length === 0) {
+            setTimeout(()=>{
+              alert("Level Complete!");
+              ecoActionGame.level++;
+              user.ecoActionGame = ecoActionGame;
+              startEcoActionMatch();
+              updateLeaderboard();
+            }, 300);
+          }
+          updateLeaderboard();
+        };
+        actionsDiv.appendChild(div);
+      });
+      document.getElementById("eco-level").textContent = ecoActionGame.level;
+      document.getElementById("eco-score").textContent = ecoActionGame.score;
+      user.ecoActionGame = ecoActionGame;
+    }
+    function nextEcoLevel() {
+      ecoActionGame.level++;
+      user.ecoActionGame = ecoActionGame;
+      startEcoActionMatch();
+    }
+  </script>
+</body>
+</html>
